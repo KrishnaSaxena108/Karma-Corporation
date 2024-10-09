@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karma Corporation Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0D47A1;
+            --secondary-color: #E3F2FD;
+            --accent-color: #FFA000;
+            --background-color: #F5F5F5;
+            --text-color: #212121;
+            --text-light-color: #757575;
+            --sidebar-width: 250px;
+            --transition-speed: 0.4s;
+            --content-transition: all 0.5s ease-in-out;
+            --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+
+        body,
+        html {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+        }
+
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        }
+
+        .login-box {
+            background-color: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.6rem 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #0A3574;
+        }
+
+        #dashboard {
+            display: none;
+            width: 100%;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 1rem;
+            height: 100%;
+            overflow-y: auto;
+            transition: width var(--transition-speed);
+            box-shadow: var(--box-shadow);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--accent-color);
+        }
+
+        .sidebar-menu {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color var(--transition-speed);
+        }
+
+        .sidebar-menu i {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background-color: var(--background-color);
+            transition: margin-left var(--transition-speed);
+            animation: fadeIn var(--content-transition);
+        }
+
+        .content-section {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn var(--content-transition);
+        }
+
+        .content-header {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .content-description {
+            font-size: 1rem;
+            color: var(--text-light-color);
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .card-content {
+            color: var(--text-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--text-light-color);
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .department-section {
+            margin-bottom: 2rem;
+        }
+
+        .department-title {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .notification {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="loginForm">
+            <div class="login-box">
+                <h1>Karma Corporation</h1>
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button onclick="login()">Login</button>
+            </div>
+        </div>
+
+        <div id="dashboard">
+            <div class="sidebar">
+                <div class="logo">Karma Corp</div>
+                <ul class="sidebar-menu" id="sidebarMenu">
+                </ul>
+            </div>
+
+            <div class="main-content" id="mainContent">
+                <div id="notification" class="notification" role="alert" aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const users = {
+            admin: { username: 'admin', password: 'admin123', type: 'admin' },
+            johndoe: { username: 'johndoe', password: 'pass123', type: 'employee', department: 'IT', position: 'Senior Developer' },
+            janesmith: { username: 'janesmith', password: 'pass456', type: 'employee', department: 'Marketing', position: 'Marketing Manager' },
+            bobwilson: { username: 'bobwilson', password: 'pass789', type: 'employee', department: 'Sales', position: 'Sales Representative' },
+            alicejohnson: { username: 'alicejohnson', password: 'pass321', type: 'employee', department: 'HR', position: 'HR Specialist' }
+        };
+
+        const menuItems = {
+            admin: [
+                { id: 'dashboard', icon: 'fas fa-home', text: 'Dashboard' },
+                { id: 'employees', icon: 'fas fa-users', text: 'Manage Employees' },
+                { id: 'tasks', icon: 'fas fa-tasks', text: 'Assign Tasks' },
+                { id: 'reports', icon: 'fas fa-chart-bar', text: 'Reports' },
+                { id: 'settings', icon: 'fas fa-cog', text: 'Settings' }
+            ],
+            employee: [
+                { id: 'dashboard', icon: 'fas fa-home', text: 'Dashboard' },
+                { id: 'mytasks', icon: 'fas fa-clipboard-list', text: 'My Tasks' },
+                { id: 'timesheet', icon: 'fas fa-clock', text: 'Timesheet' },
+                { id: 'leave', icon: 'fas fa-calendar-alt', text: 'Leave Request' }
+            ]
+        };
+
+        const employees = [
+            { id: 1, name: "John Doe", department: "IT", position: "Senior Developer", status: "Active" },
+            { id: 2, name: "Jane Smith", department: "Marketing", position: "Marketing Manager", status: "Active" },
+            { id: 3, name: "Bob Wilson", department: "Sales", position: "Sales Representative", status: "Active" },
+            { id: 4, name: "Alice Johnson", department: "HR", position: "HR Specialist", status: "Active" }
+        ];
+
+        let tasks = {
+            johndoe: [],
+            janesmith: [],
+            bobwilson: [],
+            alicejohnson: []
+        };
+
+        let currentUser = null;
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const user = users[username];
+            if (user && user.password === password) {
+                currentUser = user;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'flex';
+                setupDashboard(user);
+            } else {
+                alert('Invalid credentials. Please try again.');
+            }
+        }
+
+        function setupDashboard(user) {
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const mainContent = document.getElementById('mainContent');
+
+            sidebarMenu.innerHTML = '';
+            mainContent.innerHTML = '<div id="notification" class="notification" role="alert" aria-live="polite"></div>';
+
+            const items = menuItems[user.type];
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#" onclick="showSection('${item.id}')"><i class="${item.icon}"></i> ${item.text}</a>`;
+                sidebarMenu.appendChild(li);
+            });
+
+            items.forEach(item => {
+                const section = document.createElement('div');
+                section.id = item.id + '-section';
+                section.className = 'content-section';
+                section.innerHTML = generateSectionContent(item, user);
+                mainContent.appendChild(section);
+            });
+
+            showSection('dashboard');
+
+            if (user.type === 'employee' && tasks[user.username].length > 0) {
+                showNotification(`You have ${tasks[user.username].length} task(s) assigned to you.`);
+            }
+        }
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId + '-section').classList.add('active');
+
+            const menuItems = document.querySelectorAll('.sidebar-menu a');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick').includes(sectionId)) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function generateSectionContent(item, user) {
+            switch (item.id) {
+                case 'dashboard':
+                    return generateDashboardContent(user);
+                case 'employees':
+                    return generateEmployeeList();
+                case 'tasks':
+                    return generateTaskAssignmentForm();
+                case 'reports':
+                    return generateReportsSection();
+                case 'settings':
+                    return generateSettingsSection(user);
+                case 'mytasks':
+                    return generateMyTasksSection(user);
+                case 'timesheet':
+                    return generateTimesheetSection();
+
+                case 'leave':
+                    return generateLeaveRequestSection();
+                default:
+                    return `<h2 class="content-header">${item.text}</h2><p class="content-description">This is the ${item.text.toLowerCase()} section for ${user.type}s.</p>`;
+            }
+        }
+
+        function generateDashboardContent(user) {
+            if (user.type === 'admin') {
+                return `
+                    <h2 class="content-header">Admin Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${employees.length}</div>
+                            <div class="stat-label">Total Employees</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">Departments</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">15</div>
+                            <div class="stat-label">Active Projects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">87%</div>
+                            <div class="stat-label">Task Completion Rate</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Recent Activities</div>
+                        <div class="card-content">
+                            <ul>
+                                <li>New employee onboarded in IT department</li>
+                                <li>Marketing campaign launched for Product X</li>
+                                <li>Sales team exceeded monthly target by 15%</li>
+                                <li>HR conducted quarterly performance reviews</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <h2 class="content-header">Employee Dashboard</h2>
+                    <div class="card">
+                        <div class="card-title">Welcome, ${user.username}!</div>
+                        <div class="card-content">
+                            <p>Department: ${user.department}</p>
+                            <p>Position: ${user.position}</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Your Tasks</div>
+                        <div class="card-content">
+                            <ul id="employeeTasks">
+                                ${tasks[user.username].length > 0 ? tasks[user.username].map(task => `<li>${task}</li>`).join('') : '<li>No tasks assigned yet.</li>'}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function generateEmployeeList() {
+            const departments = [...new Set(employees.map(emp => emp.department))];
+            let html = '<h2 class="content-header">Manage Employees</h2>';
+
+            departments.forEach(dept => {
+                html += `
+                    <div class="department-section">
+                        <h3 class="department-title">${dept} Department</h3>
+                        <div class="card">
+                            <div class="card-content">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Position</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                `;
+
+                employees.filter(emp => emp.department === dept).forEach(emp => {
+                    html += `
+                        <tr>
+                            <td>${emp.name}</td>
+                            <td>${emp.position}</td>
+                            <td>${emp.status}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        function generateTaskAssignmentForm() {
+            return `
+                <h2 class="content-header">Assign Tasks</h2>
+                <div class="card">
+                    <div class="card-title">New Task Assignment</div>
+                    <div class="card-content">
+                        <form onsubmit="return assignTask(event)">
+                            <div class="form-group">
+                                <label for="taskName">Task Name</label>
+                                <input type="text" id="taskName" name="taskName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="assignee">Assignee</label>
+                                <select id="assignee" name="assignee" required>
+                                    <option value="">Select an employee</option>
+                                    ${employees.map(emp => `<option value="${emp.name.toLowerCase().replace(' ', '')}">${emp.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dueDate">Due Date</label>
+                                <input type="date" id="dueDate" name="dueDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" rows="4" required></textarea>
+                            </div>
+                            <button type="submit">Assign Task</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        function assignTask(event) {
+            event.preventDefault();
+            const taskName = document.getElementById('taskName').value;
+            const assignee = document.getElementById('assignee').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const description = document.getElementById('description').value;
+
+            const newTask = `${taskName} (Due: ${dueDate})`;
+            tasks[assignee].push(newTask);
+
+            alert(`Task "${taskName}" has been assigned to ${assignee}.`);
+            event.target.reset();
+
+            // Update the employee's dashboard if they are currently logged in
+            if (currentUser && currentUser.username === assignee) {
+                const employeeTasks = document.getElementById('employeeTasks');
+                if (employeeTasks) {
+                    if (employeeTasks.innerHTML.includes('No tasks assigned yet.')) {
+                        employeeTasks.innerHTML = '';
+                    }
+                    employeeTasks.innerHTML += `<li>${newTask}</li>`;
+                }
+                showNotification(`A new task "${taskName}" has been assigned to you.`);
+            }
+
+            return false;
+        }
+
+        function generateReportsSection() {
+            return `
+                <h2 class="content-header">Reports</h2>
+                <div class="card">
+                    <div class="card-title">Available Reports</div>
+                    <div class="card-content">
+                        <ul>
+                            <li>Employee Performance Report</li>
+                            <li>Department Productivity Analysis</li>
+                            <li>Project Progress Summary</li>
+                            <li>Financial Overview</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateSettingsSection(user) {
+            return `
+                <h2 class="content-header">Settings</h2>
+                <div class="card">
+                    <div class="card-title">Account Settings</div>
+                    <div class="card-content">
+                        <form>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" value="${user.username}@karmacorp.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">New Password</label>
+                                <input type="password" id="password" name="password">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm New Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword">
+                            </div>
+                            <button type="submit">Update Settings</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateMyTasksSection(user) {
+            return `
+                <h2 class="content-header">My Tasks</h2>
+                <div class="card">
+                    <div class="card-title">Current Tasks</div>
+                    <div class="card-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Task Name</th>
+                                    <th>Status</th>
+                                    <th>Due Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myTasksTable">
+                                ${tasks[user.username].length > 0 ? tasks[user.username].map(task => `
+                                    <tr>
+                                        <td>${task.split(' (Due:')[0]}</td>
+                                        <td>In Progress</td>
+                                        <td>${task.split('Due: ')[1].slice(0, -1)}</td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="3">No tasks assigned yet.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateTimesheetSection() {
+            return `
+                <h2 class="content-header">Timesheet</h2>
+                <div class="card">
+                    <div class="card-title">Weekly Timesheet</div>
+                    <div class="card-content">
+                        <form>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Project</th>
+                                        <th>Hours</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${[...Array(5)].map((_, i) => `
+                                        <tr>
+                                            <td>${new Date(Date.now() - i * 86400000).toISOString().split('T')[0]}</td>
+                                            <td>
+                                                <select>
+                                                    <option>Project A</option>
+                                                    <option>Project B</option>
+                                                    <option>Project C</option>
+                                                </select>
+                                            </td>
+                                            <td><input type="number" min="0" max="24" step="0.5"></td>
+                                            <td><input type="text"></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            <button type="submit" style="margin-top: 1rem;">Submit Timesheet</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateLeaveRequestSection() {
+            return `
+                <h2 class="content-header">Leave Request</h2>
+                <div class="card">
+                    <div class="card-title">Submit Leave Request</div>
+                    <div class="card-content">
+                        <form>
+                            <div class="form-group">
+                                <label for="leaveType">Leave Type</label>
+                                <select id="leaveType" name="leaveType">
+                                    <option value="annual">Annual Leave</option>
+                                    <option value="sick">Sick Leave</option>
+                                    <option value="personal">Personal Leave</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="startDate">Start Date</label>
+                                <input type="date" id="startDate" name="startDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="endDate">End Date</label>
+                                <input type="date" id="endDate" name="endDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="reason">Reason</label>
+                                <textarea id="reason" name="reason" rows="4"></textarea>
+                            </div>
+                            <button type="submit">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>
